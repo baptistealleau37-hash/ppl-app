@@ -1,0 +1,1014 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>PPL — Hypertrophie &amp; Force</title>
+<style>
+  :root{
+    --bg:#f4f5f7; --card:#ffffff; --text:#16181d; --muted:#6b7280;
+    --border:#e4e6eb; --accent:#2f6fed; --accent-ink:#ffffff;
+    --force:#e0632b; --force-bg:#fdefe6;
+    --hyper:#2f6fed; --hyper-bg:#eaf1ff;
+    --iso:#1f9d63; --iso-bg:#e7f8ee;
+    --danger:#d13f3f; --danger-bg:#fceaea;
+    --shadow:0 1px 2px rgba(16,24,40,.06),0 1px 3px rgba(16,24,40,.08);
+    --radius:14px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#111318; --card:#1a1d24; --text:#e9eaee; --muted:#93989f;
+      --border:#2a2e37; --accent:#5b8def; --accent-ink:#0b1020;
+      --force:#f08a52; --force-bg:#2c1c12;
+      --hyper:#6ea2ff; --hyper-bg:#111e33;
+      --iso:#4fce93; --iso-bg:#0f2419;
+      --danger:#f0716f; --danger-bg:#2c1414;
+      --shadow:0 1px 2px rgba(0,0,0,.4),0 1px 3px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="light"]{
+    --bg:#f4f5f7; --card:#ffffff; --text:#16181d; --muted:#6b7280;
+    --border:#e4e6eb; --accent:#2f6fed; --accent-ink:#ffffff;
+    --force:#e0632b; --force-bg:#fdefe6;
+    --hyper:#2f6fed; --hyper-bg:#eaf1ff;
+    --iso:#1f9d63; --iso-bg:#e7f8ee;
+    --danger:#d13f3f; --danger-bg:#fceaea;
+  }
+  :root[data-theme="dark"]{
+    --bg:#111318; --card:#1a1d24; --text:#e9eaee; --muted:#93989f;
+    --border:#2a2e37; --accent:#5b8def; --accent-ink:#0b1020;
+    --force:#f08a52; --force-bg:#2c1c12;
+    --hyper:#6ea2ff; --hyper-bg:#111e33;
+    --iso:#4fce93; --iso-bg:#0f2419;
+    --danger:#f0716f; --danger-bg:#2c1414;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    min-height:100dvh; padding-bottom:80px;
+  }
+  .wrap{max-width:640px;margin:0 auto;padding:0 14px;}
+  header.top{
+    position:sticky; top:0; z-index:20; background:var(--bg);
+    border-bottom:1px solid var(--border); padding:10px 0;
+  }
+  header.top .row{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  header.top h1{font-size:17px;margin:0;font-weight:700;}
+  header.top .sub{font-size:12px;color:var(--muted);margin-top:2px;}
+  .iconbtn{
+    background:var(--card); border:1px solid var(--border); color:var(--text);
+    border-radius:10px; width:36px; height:36px; display:flex; align-items:center;
+    justify-content:center; cursor:pointer; font-size:16px;
+  }
+  nav.tabs{display:flex;gap:6px;margin:10px 0 4px;overflow-x:auto;padding-bottom:2px;}
+  nav.tabs button{
+    flex:0 0 auto; padding:8px 14px; border-radius:999px; border:1px solid var(--border);
+    background:var(--card); color:var(--text); font-size:13px; font-weight:600; cursor:pointer;
+    white-space:nowrap;
+  }
+  nav.tabs button.active{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);}
+  .deload-banner{
+    margin:10px 0; padding:10px 12px; border-radius:12px; background:var(--force-bg);
+    color:var(--force); font-size:13px; font-weight:600; display:flex; gap:8px; align-items:center;
+    border:1px solid var(--force);
+  }
+  .storage-banner{
+    margin:10px 0; padding:10px 12px; border-radius:12px; background:var(--danger-bg);
+    color:var(--danger); font-size:13px; font-weight:600; line-height:1.4;
+    border:1px solid var(--danger);
+  }
+  .card{
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+    box-shadow:var(--shadow); margin:10px 0; overflow:hidden;
+  }
+  .daylist{display:flex;flex-direction:column;gap:8px;margin-top:8px;}
+  .daybtn{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:14px 16px; background:var(--card); border:1px solid var(--border);
+    border-radius:var(--radius); cursor:pointer; text-align:left; box-shadow:var(--shadow);
+  }
+  .daybtn .name{font-weight:700;font-size:15px;}
+  .daybtn .session{font-size:12px;color:var(--muted);margin-top:2px;}
+  .daybtn.today{border-color:var(--accent);}
+  .daybtn .chip{
+    font-size:11px; font-weight:700; padding:4px 9px; border-radius:999px;
+  }
+  .chip.push{background:var(--hyper-bg);color:var(--hyper);}
+  .chip.pull{background:var(--iso-bg);color:var(--iso);}
+  .chip.legs{background:var(--force-bg);color:var(--force);}
+  .chip.rest{background:var(--border);color:var(--muted);}
+  .legend{padding:12px 14px;font-size:12.5px;color:var(--muted);line-height:1.5;}
+  .legend b{color:var(--text);}
+  .legend .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;}
+  .dot.force{background:var(--force);} .dot.hyper{background:var(--hyper);} .dot.iso{background:var(--iso);}
+  .exercise{border-top:1px solid var(--border);padding:14px;}
+  .exercise:first-of-type{border-top:none;}
+  .ex-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;}
+  .ex-title{font-weight:700;font-size:14.5px;line-height:1.3;}
+  .ex-note{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.4;}
+  .ex-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+  .badge{font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;}
+  .badge.force{background:var(--force-bg);color:var(--force);}
+  .badge.hyper{background:var(--hyper-bg);color:var(--hyper);}
+  .badge.iso{background:var(--iso-bg);color:var(--iso);}
+  .badge.target{background:var(--border);color:var(--text);}
+  .setrow{display:grid;grid-template-columns:28px 1fr 1fr auto;gap:8px;align-items:center;margin-top:8px;}
+  .setrow .setno{font-size:12px;color:var(--muted);text-align:center;font-weight:700;}
+  .setrow input{
+    width:100%; padding:9px 8px; border-radius:9px; border:1px solid var(--border);
+    background:var(--bg); color:var(--text); font-size:14px; text-align:center;
+  }
+  .setrow input::placeholder{color:var(--muted);opacity:.7;}
+  .rmset{background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:4px 6px;}
+  .last-time{font-size:11.5px;color:var(--muted);margin-top:6px;}
+  .exbtns{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+  .smallbtn{
+    font-size:12px; font-weight:600; padding:7px 11px; border-radius:9px;
+    border:1px solid var(--border); background:var(--bg); color:var(--text); cursor:pointer;
+  }
+  .smallbtn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);}
+  .history{margin-top:10px;border-top:1px dashed var(--border);padding-top:10px;display:none;}
+  .history.open{display:block;}
+  .history table{width:100%;border-collapse:collapse;font-size:12px;}
+  .history th,.history td{text-align:left;padding:4px 6px;border-bottom:1px solid var(--border);}
+  .history th{color:var(--muted);font-weight:600;}
+  .history .del{color:var(--danger);cursor:pointer;font-size:12px;}
+  .save-bar{
+    position:fixed; left:0; right:0; bottom:0; z-index:30;
+    background:var(--card); border-top:1px solid var(--border);
+    padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+  }
+  .save-bar .wrap{display:flex;gap:10px;align-items:center;}
+  .save-bar button{
+    flex:1; padding:12px; border-radius:12px; border:none; background:var(--accent);
+    color:var(--accent-ink); font-weight:700; font-size:14.5px; cursor:pointer;
+  }
+  .datepick{
+    font-size:13px; border:1px solid var(--border); background:var(--bg); color:var(--text);
+    border-radius:9px; padding:9px 8px;
+  }
+  .toast{
+    position:fixed; left:50%; transform:translateX(-50%); bottom:90px; z-index:40;
+    background:var(--text); color:var(--bg); padding:9px 16px; border-radius:999px;
+    font-size:13px; font-weight:600; opacity:0; pointer-events:none; transition:opacity .25s;
+  }
+  .toast.show{opacity:1;}
+  .settings-section h3{font-size:13px;color:var(--muted);margin:16px 0 6px;text-transform:uppercase;letter-spacing:.03em;}
+  .settings-row{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-top:1px solid var(--border);}
+  .settings-row:first-of-type{border-top:none;}
+  .settings-row .label{font-size:14px;font-weight:600;}
+  .settings-row .desc{font-size:12px;color:var(--muted);margin-top:2px;}
+  textarea.backup{width:100%;min-height:100px;font-size:11px;border-radius:9px;border:1px solid var(--border);background:var(--bg);color:var(--text);padding:8px;font-family:monospace;}
+  .progtxt{font-size:12px;color:var(--muted);padding:10px 14px;line-height:1.5;}
+  .hidden{display:none !important;}
+  .weekbadge{font-size:12px;color:var(--muted);white-space:nowrap;flex-shrink:0;margin-left:10px;}
+  .infobox{font-size:12.5px;line-height:1.55;color:var(--muted);padding:12px 14px;}
+  .infobox b{color:var(--text);}
+  .donecheck{
+    display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px;
+    border-radius:50%; background:var(--iso); color:var(--card); font-size:12px; font-weight:800; flex-shrink:0;
+  }
+  .badge.timerlaunch{
+    border:none; cursor:pointer; display:inline-flex; align-items:center; gap:4px;
+    font:inherit; font-size:11px; font-weight:700;
+  }
+  .timer-fab{
+    position:fixed; right:16px; bottom:84px; z-index:35;
+    background:var(--accent); color:var(--accent-ink); border:none; border-radius:999px;
+    padding:11px 16px; font-weight:700; font-size:13px; box-shadow:var(--shadow); cursor:pointer;
+    display:flex; gap:6px; align-items:center; font-variant-numeric:tabular-nums;
+  }
+  .timer-fab.running{background:var(--iso);}
+  .timer-fab.done{background:var(--force);}
+  .timer-panel{
+    position:fixed; right:16px; bottom:140px; z-index:36; width:220px;
+    background:var(--card); border:1px solid var(--border); border-radius:16px;
+    box-shadow:var(--shadow); padding:14px;
+  }
+  .timer-panel.hidden{display:none;}
+  .timer-display{
+    font-size:36px; font-weight:800; text-align:center; font-variant-numeric:tabular-nums; letter-spacing:.02em;
+  }
+  .timer-presets{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-top:10px;}
+  .timer-presets button{
+    font-size:12px; padding:6px 9px; border-radius:8px; border:1px solid var(--border);
+    background:var(--bg); color:var(--text); cursor:pointer;
+  }
+  .timer-presets button.active{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);}
+  .timer-adjust{display:flex;gap:8px;margin-top:8px;}
+  .timer-adjust button{
+    flex:1; font-size:12px; padding:7px; border-radius:8px; border:1px solid var(--border);
+    background:var(--bg); color:var(--text); cursor:pointer;
+  }
+  .timer-controls{display:flex;gap:8px;margin-top:10px;}
+  .timer-controls button{flex:1;padding:9px;border-radius:9px;border:none;font-weight:700;font-size:13px;cursor:pointer;}
+  #timerStartPause{background:var(--accent);color:var(--accent-ink);}
+  #timerReset{background:var(--border);color:var(--text);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="row">
+      <div>
+        <h1>Push / Pull / Legs</h1>
+        <div class="sub" id="headerSub">Hypertrophie &amp; Force</div>
+      </div>
+      <button class="iconbtn" id="themeToggle" title="Thème">🌓</button>
+    </div>
+    <nav class="tabs">
+      <button data-tab="home" class="active">Semaine</button>
+      <button data-tab="journal">Journal</button>
+      <button data-tab="info">Programme</button>
+      <button data-tab="settings">Réglages</button>
+    </nav>
+  </header>
+
+  <div id="storageWarning" class="storage-banner hidden"></div>
+  <div id="deloadBanner" class="deload-banner hidden"></div>
+
+  <main id="view"></main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<button class="timer-fab" id="timerFab">⏱ <span id="timerFabLabel"></span></button>
+<div class="timer-panel hidden" id="timerPanel">
+  <div class="timer-display" id="timerDisplay">01:30</div>
+  <div class="timer-presets">
+    <button data-preset="75">1:15</button>
+    <button data-preset="90">1:30</button>
+    <button data-preset="105">1:45</button>
+    <button data-preset="120">2:00</button>
+    <button data-preset="180">3:00</button>
+  </div>
+  <div class="timer-adjust">
+    <button id="timerMinus">-15s</button>
+    <button id="timerPlus">+15s</button>
+  </div>
+  <div class="timer-controls">
+    <button id="timerStartPause">Démarrer</button>
+    <button id="timerReset">Réinitialiser</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- DATA ---------------- */
+  const SCHEDULE = [
+    {day:"Lundi", key:"push"},
+    {day:"Mardi", key:"pull"},
+    {day:"Mercredi", key:"legs"},
+    {day:"Jeudi", key:"push"},
+    {day:"Vendredi", key:"pull"},
+    {day:"Samedi", key:"legs"},
+    {day:"Dimanche", key:null},
+  ];
+
+  const SESSIONS = {
+    push:{
+      label:"Push", title:"Push — Pecs / Épaules / Triceps",
+      exercises:[
+        {name:"Développé couché, banc plat 0°", note:"barre, haltères, ou smith machine — équivalent niveau pecs/triceps", sets:4, reps:"4-6", block:"force", rest:"2min30-3min30"},
+        {name:"Développé incliné haltères, banc à 30°", note:"au-delà de 45°, ce sont les épaules qui prennent le relais", sets:3, reps:"8-10", block:"hyper", rest:"1min30-2min"},
+        {name:"Écarté poulie haute", note:"pulleys au-dessus de la tête, tire vers le bas/hanches — cible le bas des pecs, proche échec", sets:3, reps:"10-12", block:"hyper", rest:"1min30-2min"},
+        {name:"Développé militaire, barre", note:"debout ou assis selon confort lombaire", sets:3, reps:"6-8", block:"hyper", rest:"1min30-2min"},
+        {name:"Élévation latérale à la poulie basse", note:"échec ok", sets:3, reps:"12-15", block:"hyper", rest:"1min30-2min"},
+        {name:"Extension triceps à la corde, poulie haute", note:"échec sur la dernière série", sets:3, reps:"10-12", block:"iso", rest:"60-90sec"},
+      ]
+    },
+    pull:{
+      label:"Pull", title:"Pull — Dos / Biceps / Trapèzes",
+      exercises:[
+        {name:"Tractions, prise pronation", note:"un peu plus large que les épaules — lestées si 8+ reps au poids du corps", sets:4, reps:"4-6", block:"force", rest:"2min30-3min30"},
+        {name:"Rowing prise serrée, poulie basse (barre en V)", note:"ou T-bar si dispo", sets:3, reps:"6-8", block:"hyper", rest:"1min30-2min"},
+        {name:"Rowing prise large, poulie basse (barre droite)", note:"", sets:3, reps:"8-10", block:"hyper", rest:"1min30-2min"},
+        {name:"Face pull, poulie haute", note:"hauteur du visage — échec ok, santé d'épaule, souvent négligé", sets:3, reps:"12-15", block:"hyper", rest:"1min30-2min"},
+        {name:"Shrugs (haltères ou barre)", note:"échec ok, pause 1-2sec en haut", sets:3, reps:"12-15", block:"hyper", rest:"1min30-2min"},
+        {name:"Curl incliné, banc à 45-60°", note:"bras derrière le corps — proche échec", sets:3, reps:"10-12", block:"hyper", rest:"1min30-2min"},
+        {name:"Curl marteau, debout", note:"échec sur la dernière série", sets:3, reps:"10-12", block:"iso", rest:"60-90sec"},
+      ]
+    },
+    legs:{
+      label:"Jambes", title:"Jambes + Adducteurs + Abdos",
+      exercises:[
+        {name:"Squat", note:"ou presse à cuisses si le squat n'est pas encore propre techniquement", sets:4, reps:"5-6", block:"force", rest:"2min30-3min30"},
+        {name:"Soulevé de terre roumain", note:"barre ou haltères", sets:3, reps:"8-10", block:"hyper", rest:"1min30-2min"},
+        {name:"Fentes bulgares, haltères en mains", note:"par jambe", sets:3, reps:"8-10/jambe", block:"hyper", rest:"1min30-2min"},
+        {name:"Leg curl assis", note:"hanches fléchies = ischios plus étirés — proche échec", sets:3, reps:"10-12", block:"hyper", rest:"1min30-2min"},
+        {name:"Nordic curl", note:"excentrique ischios, chevilles calées — ~50% de risque en moins de blessure ischios (méta-analyses)", sets:3, reps:"6-8", block:"hyper", rest:"1min30-2min"},
+        {name:"Planche de Copenhague (adducteurs)", note:"3x8-10/côté, ou 3x20-30sec isométrique si débutant — protection de l'aine", sets:3, reps:"8-10/côté", block:"hyper", rest:"1min30-2min"},
+        {name:"Mollets debout", note:"échec ok", sets:4, reps:"12-15", block:"hyper", rest:"1min30-2min"},
+        {name:"Crunch à la poulie haute (corde, à genoux)", note:"échec ok — le vrai exercice pour le grand droit, chargeable progressivement", sets:3, reps:"12-15", block:"hyper", rest:"1min30-2min"},
+        {name:"Gainage : planche + pallof press", note:"poulie, hauteur de poitrine — ou équivalent anti-rotation", sets:3, reps:"30-45sec", block:"iso", rest:"60-90sec", unit:"sec"},
+      ]
+    }
+  };
+
+  const BLOCK_LABEL = {force:"Force", hyper:"Hypertrophie", iso:"Isolation"};
+  const BLOCK_REST_SECONDS = {force:180, hyper:105, iso:75};
+
+  /* ---------------- STATE / STORAGE ---------------- */
+  const STORE_KEY = "pplTrackerV2";
+  const PROBE_KEY = "__pplStorageProbe__";
+
+  function storageAvailable(){
+    try{
+      localStorage.setItem(PROBE_KEY, "1");
+      const ok = localStorage.getItem(PROBE_KEY) === "1";
+      localStorage.removeItem(PROBE_KEY);
+      return ok;
+    }catch(e){ return false; }
+  }
+  const STORAGE_OK = storageAvailable();
+
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(STORE_KEY);
+      if(raw) return JSON.parse(raw);
+    }catch(e){}
+    return {logs:{}, cycleStart: todayISO(), theme:"auto"};
+  }
+  function saveState(){
+    try{
+      localStorage.setItem(STORE_KEY, JSON.stringify(state));
+    }catch(e){
+      showStorageWarning();
+    }
+  }
+  function showStorageWarning(){
+    const w = document.getElementById("storageWarning");
+    if(!w) return;
+    w.classList.remove("hidden");
+    w.innerHTML = "⚠️ Le stockage local est indisponible ou bloqué ici — tes séances ne seront pas sauvegardées après fermeture. Ouvre l'app dans un onglet de navigateur classique (pas dans une vue intégrée) pour activer la sauvegarde.";
+  }
+  let state = loadState();
+  if(!state.cycleStart) state.cycleStart = todayISO();
+  if(!STORAGE_OK){ showStorageWarning(); }
+
+  function todayISO(){
+    const d = new Date();
+    d.setMinutes(d.getMinutes()-d.getTimezoneOffset());
+    return d.toISOString().slice(0,10);
+  }
+  function fmtDate(iso){
+    const [y,m,d]=iso.split("-");
+    return `${d}/${m}/${y.slice(2)}`;
+  }
+  function isoFromDate(d){
+    const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,"0"), day=String(d.getDate()).padStart(2,"0");
+    return `${y}-${m}-${day}`;
+  }
+  function mondayOfWeek(d){
+    const m = new Date(d);
+    const day = m.getDay();
+    m.setDate(m.getDate() + (day===0 ? -6 : 1-day));
+    return m;
+  }
+  function sessionHasData(dateISO, sessionKey){
+    const day = state.logs[dateISO] && state.logs[dateISO][sessionKey];
+    if(!day) return false;
+    return Object.values(day).some(sets => Array.isArray(sets) && sets.some(s => (s.w && s.w!=="") || (s.r && s.r!=="")));
+  }
+
+  /* ---------------- THEME ---------------- */
+  function applyTheme(){
+    const t = state.theme || "auto";
+    if(t==="auto") document.documentElement.removeAttribute("data-theme");
+    else document.documentElement.setAttribute("data-theme", t);
+  }
+  applyTheme();
+  document.getElementById("themeToggle").addEventListener("click", ()=>{
+    const order = ["auto","light","dark"];
+    const cur = order.indexOf(state.theme||"auto");
+    state.theme = order[(cur+1)%order.length];
+    saveState(); applyTheme();
+    toast("Thème : " + (state.theme==="auto"?"auto":state.theme==="light"?"clair":"sombre"));
+  });
+
+  /* ---------------- TOAST ---------------- */
+  let toastTimer;
+  function toast(msg){
+    const el = document.getElementById("toast");
+    el.textContent = msg;
+    el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=>el.classList.remove("show"), 1800);
+  }
+
+  /* ---------------- DELOAD ---------------- */
+  function cycleWeek(){
+    const start = new Date(state.cycleStart+"T00:00:00");
+    const now = new Date(todayISO()+"T00:00:00");
+    const diffDays = Math.floor((now-start)/86400000);
+    return Math.floor(diffDays/7)+1;
+  }
+  function renderDeloadBanner(){
+    const w = cycleWeek();
+    const banner = document.getElementById("deloadBanner");
+    if(w%6===0){
+      banner.classList.remove("hidden");
+      banner.innerHTML = `⚠️ Semaine ${w} du cycle — semaine deload conseillée (≈ -30% de volume)`;
+    } else {
+      banner.classList.add("hidden");
+    }
+  }
+
+  /* ---------------- REST TIMER ---------------- */
+  const TIMER_KEY = "pplTimerV1";
+  let timer = {duration:90, remaining:90, endTime:null, running:false};
+  let audioCtx = null;
+
+  function loadTimer(){
+    try{
+      const raw = localStorage.getItem(TIMER_KEY);
+      if(raw){
+        const t = JSON.parse(raw);
+        timer.duration = t.duration || 90;
+        if(t.running && t.endTime){
+          const rem = Math.round((t.endTime - Date.now())/1000);
+          if(rem>0){ timer.remaining=rem; timer.endTime=t.endTime; timer.running=true; }
+          else { timer.remaining=0; timer.endTime=null; timer.running=false; }
+        } else {
+          timer.remaining = (t.remaining!=null) ? t.remaining : timer.duration;
+          timer.endTime = null; timer.running = false;
+        }
+      } else {
+        timer.remaining = timer.duration;
+      }
+    }catch(e){ timer.remaining = timer.duration; }
+  }
+  function saveTimerState(){
+    localStorage.setItem(TIMER_KEY, JSON.stringify({
+      duration: timer.duration, remaining: timer.remaining, running: timer.running, endTime: timer.endTime
+    }));
+  }
+  function fmtMMSS(sec){
+    sec = Math.max(0, Math.round(sec));
+    const m = Math.floor(sec/60), s = sec%60;
+    return String(m).padStart(2,"0") + ":" + String(s).padStart(2,"0");
+  }
+  function ensureAudio(){
+    if(!audioCtx){
+      try{ audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){}
+    }
+    if(audioCtx && audioCtx.state==="suspended"){ audioCtx.resume(); }
+  }
+  function beepTone(freq, delayMs){
+    setTimeout(()=>{
+      if(!audioCtx) return;
+      const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      o.type = "sine"; o.frequency.value = freq;
+      o.connect(g); g.connect(audioCtx.destination);
+      const t0 = audioCtx.currentTime;
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(0.35, t0+0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0+0.4);
+      o.start(t0); o.stop(t0+0.45);
+    }, delayMs);
+  }
+  function onTimerComplete(){
+    try{ if(navigator.vibrate) navigator.vibrate([250,120,250,120,250]); }catch(e){}
+    beepTone(880,0); beepTone(880,300);
+    toast("Repos terminé !");
+  }
+  function setTimerDuration(sec){
+    timer.duration = sec;
+    if(!timer.running){ timer.remaining = sec; timer.endTime = null; }
+    saveTimerState(); renderTimer();
+  }
+  function startTimer(){
+    ensureAudio();
+    if(timer.remaining<=0) timer.remaining = timer.duration;
+    timer.endTime = Date.now() + timer.remaining*1000;
+    timer.running = true;
+    saveTimerState(); renderTimer();
+  }
+  function pauseTimer(){
+    if(timer.running && timer.endTime){
+      timer.remaining = Math.max(0, Math.round((timer.endTime-Date.now())/1000));
+    }
+    timer.running = false; timer.endTime = null;
+    saveTimerState(); renderTimer();
+  }
+  function resetTimer(){
+    timer.running = false; timer.endTime = null; timer.remaining = timer.duration;
+    saveTimerState(); renderTimer();
+  }
+  function adjustTimer(delta){
+    if(timer.running && timer.endTime){
+      timer.endTime += delta*1000;
+      timer.remaining = Math.max(0, Math.round((timer.endTime-Date.now())/1000));
+    } else {
+      timer.remaining = Math.max(0, timer.remaining+delta);
+    }
+    saveTimerState(); renderTimer();
+  }
+  function tickTimer(){
+    if(!timer.running || !timer.endTime) return;
+    const rem = Math.round((timer.endTime-Date.now())/1000);
+    if(rem<=0){
+      timer.remaining = 0; timer.running = false; timer.endTime = null;
+      saveTimerState(); onTimerComplete();
+    } else {
+      timer.remaining = rem;
+    }
+    renderTimer();
+  }
+  function renderTimer(){
+    const fab = document.getElementById("timerFab");
+    const fabLabel = document.getElementById("timerFabLabel");
+    const display = document.getElementById("timerDisplay");
+    const startPauseBtn = document.getElementById("timerStartPause");
+    fabLabel.textContent = fmtMMSS(timer.remaining);
+    display.textContent = fmtMMSS(timer.remaining);
+    fab.classList.toggle("running", timer.running);
+    fab.classList.toggle("done", !timer.running && timer.remaining===0);
+    startPauseBtn.textContent = timer.running ? "Pause" : (timer.remaining<=0 ? "Redémarrer" : "Démarrer");
+    document.querySelectorAll(".timer-presets button").forEach(b=>{
+      b.classList.toggle("active", parseInt(b.dataset.preset,10)===timer.duration);
+    });
+  }
+  function wireTimerWidget(){
+    document.getElementById("timerFab").addEventListener("click", ()=>{
+      document.getElementById("timerPanel").classList.toggle("hidden");
+    });
+    document.querySelectorAll(".timer-presets button").forEach(b=>{
+      b.addEventListener("click", ()=> setTimerDuration(parseInt(b.dataset.preset,10)));
+    });
+    document.getElementById("timerMinus").addEventListener("click", ()=>adjustTimer(-15));
+    document.getElementById("timerPlus").addEventListener("click", ()=>adjustTimer(15));
+    document.getElementById("timerStartPause").addEventListener("click", ()=>{
+      if(timer.running) pauseTimer(); else startTimer();
+    });
+    document.getElementById("timerReset").addEventListener("click", resetTimer);
+    setInterval(tickTimer, 250);
+  }
+
+  /* ---------------- NAV ---------------- */
+  const tabs = document.querySelectorAll("nav.tabs button");
+  let currentTab = "home";
+  let currentSession = null; // {key, date}
+
+  tabs.forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      currentTab = btn.dataset.tab;
+      tabs.forEach(b=>b.classList.toggle("active", b===btn));
+      render();
+    });
+  });
+
+  function goSession(key, date){
+    currentSession = {key, date: date||todayISO()};
+    currentTab = "session";
+    tabs.forEach(b=>b.classList.remove("active"));
+    render();
+  }
+
+  /* ---------------- LOG HELPERS ---------------- */
+  function getDayLog(dateISO, sessionKey){
+    return (state.logs[dateISO] && state.logs[dateISO][sessionKey]) || null;
+  }
+  function persistExercise(exEl, sessionKey, dateISO, exIndex){
+    if(!state.logs[dateISO]) state.logs[dateISO] = {};
+    if(!state.logs[dateISO][sessionKey]) state.logs[dateISO][sessionKey] = {};
+    const sets = [];
+    exEl.querySelectorAll(".setrow").forEach(row=>{
+      const w = row.querySelector('[data-field="w"]').value;
+      const r = row.querySelector('[data-field="r"]').value;
+      sets.push({w: w||"", r: r||""});
+    });
+    state.logs[dateISO][sessionKey][exIndex] = sets;
+    saveState();
+  }
+  function lastLogFor(sessionKey, exIndex, beforeDate){
+    const dates = Object.keys(state.logs).filter(d=> d<=beforeDate).sort().reverse();
+    for(const d of dates){
+      const day = state.logs[d];
+      if(day && day[sessionKey] && day[sessionKey][exIndex] && day[sessionKey][exIndex].length){
+        return {date:d, sets: day[sessionKey][exIndex]};
+      }
+    }
+    return null;
+  }
+  function allLogsFor(sessionKey, exIndex){
+    return Object.keys(state.logs).sort().reverse().map(d=>{
+      const day = state.logs[d];
+      if(day && day[sessionKey] && day[sessionKey][exIndex] && day[sessionKey][exIndex].length){
+        return {date:d, sets: day[sessionKey][exIndex]};
+      }
+      return null;
+    }).filter(Boolean);
+  }
+
+  /* ---------------- RENDER: HOME ---------------- */
+  function renderHome(){
+    const monday = mondayOfWeek(new Date());
+    const todayIso = todayISO();
+    let html = `<div class="card legend">
+      <div><span class="dot force"></span><b>1er exercice (lourd)</b> — RIR 1-2, jamais à l'échec, repos 2min30-3min30. Volet force.</div>
+      <div style="margin-top:6px;"><span class="dot hyper"></span><b>Exercices du milieu</b> — RIR 0-2, échec possible en dernière série, repos 1min30-2min. Volet hypertrophie.</div>
+      <div style="margin-top:6px;"><span class="dot iso"></span><b>Dernier exercice</b> — échec ok, repos 60-90sec.</div>
+    </div>
+    <div class="daylist">`;
+    SCHEDULE.forEach((d,idx)=>{
+      const dayDate = new Date(monday); dayDate.setDate(monday.getDate()+idx);
+      const dateISO = isoFromDate(dayDate);
+      const isToday = dateISO===todayIso;
+      if(d.key===null){
+        html += `<div class="daybtn ${isToday?'today':''}" style="cursor:default;">
+          <div><div class="name">${d.day}</div><div class="session">Repos complet</div></div>
+          <span class="chip rest">Repos</span>
+        </div>`;
+      } else {
+        const s = SESSIONS[d.key];
+        const done = sessionHasData(dateISO, d.key);
+        html += `<button class="daybtn ${isToday?'today':''}" data-go="${d.key}" data-date="${dateISO}">
+          <div><div class="name">${d.day}</div><div class="session">${s.title}</div></div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            ${done ? '<span class="donecheck" title="Séance enregistrée">✓</span>' : ''}
+            <span class="chip ${d.key}">${s.label}</span>
+          </div>
+        </button>`;
+      }
+    });
+    html += `</div>`;
+    return html;
+  }
+
+  /* ---------------- RENDER: SESSION ---------------- */
+  function renderSession(sessionKey, dateISO){
+    const s = SESSIONS[sessionKey];
+    let html = `<div class="card" style="padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;">
+      <div>
+        <div style="font-weight:700;font-size:15px;">${s.title}</div>
+        <div class="weekbadge">Semaine ${cycleWeek()} du cycle</div>
+      </div>
+      <input type="date" class="datepick" id="sessionDate" value="${dateISO}">
+    </div>`;
+
+    html += `<div class="card">`;
+    s.exercises.forEach((ex, i)=>{
+      const dayLog = getDayLog(dateISO, sessionKey);
+      const savedSets = (dayLog && dayLog[i]) ? dayLog[i] : null;
+      const last = lastLogFor(sessionKey, i, dateISO);
+      const nSets = savedSets ? savedSets.length : ex.sets;
+      const unit = ex.unit==="sec" ? "sec" : "reps";
+
+      html += `<div class="exercise" data-exindex="${i}">
+        <div class="ex-head">
+          <div>
+            <div class="ex-title">${ex.name}</div>
+            ${ex.note ? `<div class="ex-note">${ex.note}</div>` : ""}
+          </div>
+        </div>
+        <div class="ex-meta">
+          <span class="badge ${ex.block}">${BLOCK_LABEL[ex.block]}</span>
+          <span class="badge target">${ex.sets}×${ex.reps}${unit==="sec"?"":""}</span>
+          <button type="button" class="badge target timerlaunch" data-block="${ex.block}">⏱ Repos ${ex.rest}</button>
+        </div>
+        <div class="setrows" data-sets>`;
+
+      for(let si=0; si<nSets; si++){
+        const savedW = savedSets && savedSets[si] ? savedSets[si].w : "";
+        const savedR = savedSets && savedSets[si] ? savedSets[si].r : "";
+        const lastSet = last && last.sets[si];
+        const phW = lastSet ? lastSet.w : "kg";
+        const phR = lastSet ? lastSet.r : unit;
+        html += `<div class="setrow">
+          <div class="setno">${si+1}</div>
+          <input type="number" inputmode="decimal" step="0.5" placeholder="${phW}" value="${savedW}" data-field="w" data-set="${si}">
+          <input type="number" inputmode="numeric" step="1" placeholder="${phR}" value="${savedR}" data-field="r" data-set="${si}">
+          <button class="rmset" data-rmset="${si}" title="Retirer la série">✕</button>
+        </div>`;
+      }
+      html += `</div>`;
+      html += `<div class="last-time">${last ? `Dernière fois (${fmtDate(last.date)}) : ` + last.sets.map(x=>`${x.w||"?"}×${x.r||"?"}`).join(", ") : "Pas encore de données."}</div>`;
+      html += `<div class="exbtns">
+          <button class="smallbtn" data-addset>+ série</button>
+          ${last ? `<button class="smallbtn" data-copylast>Reprendre dernière fois</button>` : ""}
+          <button class="smallbtn" data-togglehist>Historique</button>
+        </div>`;
+      html += `<div class="history" data-hist></div>`;
+      html += `</div>`;
+    });
+    html += `</div>`;
+
+    html += `<div class="save-bar"><div class="wrap"><button id="saveSessionBtn">Enregistrer la séance</button></div></div>`;
+    return html;
+  }
+
+  function renderHistoryTable(sessionKey, exIndex){
+    const logs = allLogsFor(sessionKey, exIndex);
+    if(!logs.length) return `<div class="progtxt">Pas encore d'historique.</div>`;
+    let rows = logs.slice(0,15).map(l=>{
+      const setsStr = l.sets.map(x=>`${x.w||"?"}×${x.r||"?"}`).join(", ");
+      return `<tr><td>${fmtDate(l.date)}</td><td>${setsStr}</td><td><span class="del" data-deldate="${l.date}">supprimer</span></td></tr>`;
+    }).join("");
+    return `<table><thead><tr><th>Date</th><th>Séries (charge×reps)</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
+  }
+
+  /* ---------------- RENDER: JOURNAL ---------------- */
+  function countLoggedExercises(dateISO, sessionKey){
+    const day = state.logs[dateISO][sessionKey];
+    return Object.values(day).filter(sets =>
+      Array.isArray(sets) && sets.some(s => (s.w && s.w!=="") || (s.r && s.r!==""))
+    ).length;
+  }
+  function renderJournal(){
+    const entries = [];
+    Object.keys(state.logs).sort().reverse().forEach(dateISO=>{
+      Object.keys(state.logs[dateISO]).forEach(key=>{
+        if(SESSIONS[key] && sessionHasData(dateISO, key)){
+          entries.push({dateISO, key, nEx: countLoggedExercises(dateISO, key)});
+        }
+      });
+    });
+    if(!entries.length){
+      return `<div class="card infobox" style="margin-top:10px;">
+        <p><b>Aucune séance enregistrée pour l'instant.</b></p>
+        <p>Dès que tu saisis des charges dans une séance, elle apparaît ici, classée par date. Tape sur une séance pour la rouvrir et voir ou modifier tes charges — c'est ton carnet d'entraînement pour suivre ta progression.</p>
+      </div>`;
+    }
+    let html = `<div class="progtxt" style="padding:10px 2px 0;">${entries.length} séance${entries.length>1?"s":""} enregistrée${entries.length>1?"s":""} — tape sur une séance pour la rouvrir.</div>
+    <div class="daylist" style="margin-top:8px;">`;
+    entries.forEach(e=>{
+      const s = SESSIONS[e.key];
+      const d = new Date(e.dateISO+"T00:00:00");
+      const dayLabel = d.toLocaleDateString("fr-FR",{weekday:"long", day:"numeric", month:"long", year:"numeric"});
+      const label = dayLabel.charAt(0).toUpperCase()+dayLabel.slice(1);
+      html += `<button class="daybtn" data-go="${e.key}" data-date="${e.dateISO}">
+        <div><div class="name">${label}</div><div class="session">${s.title} — ${e.nEx} exercice${e.nEx>1?"s":""} noté${e.nEx>1?"s":""}</div></div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="donecheck" title="Séance enregistrée">✓</span>
+          <span class="chip ${e.key}">${s.label}</span>
+        </div>
+      </button>`;
+    });
+    html += `</div>`;
+    return html;
+  }
+
+  /* ---------------- RENDER: INFO ---------------- */
+  function renderInfo(){
+    return `<div class="card infobox">
+      <p><b>Comment lire chaque séance</b></p>
+      <p><span class="dot force"></span><b>1er exercice (lourd)</b> → RIR 1-2, jamais à l'échec, repos 2min30-3min30. Volet force.</p>
+      <p><span class="dot hyper"></span><b>Exercices du milieu</b> → RIR 0-2, échec possible sur la dernière série, repos 1min30-2min. Volet hypertrophie.</p>
+      <p><span class="dot iso"></span><b>Dernier exercice</b> → échec ok, repos 60-90sec.</p>
+    </div>
+    <div class="card infobox">
+      <p><b>Progression — double progression</b></p>
+      <p>Monte en reps chaque semaine jusqu'au haut de la fourchette, puis augmente le poids et redescends en bas de fourchette. Note tout (poids × reps) — sans suivi précis, la surcharge progressive reste approximative.</p>
+    </div>
+    <div class="card infobox">
+      <p><b>Force vs puissance</b></p>
+      <p>Le 4-6 reps lourd en début de séance, c'est de la force maximale — pas de la puissance. La vraie puissance (explosivité utile en foot : sprint, saut, changement d'appui) se travaille avec des mouvements rapides à charge légère/moyenne (sauts, médecine-ball, sprints courts).</p>
+    </div>
+    <div class="card infobox">
+      <p><b>À surveiller</b></p>
+      <p>• Toutes les 5-6 semaines : semaine deload (≈ -30% de volume) pour éviter la stagnation et le surmenage.</p>
+      <p>• Si reprise du foot en parallèle : baisser le volume jambes les semaines à fort volume terrain.</p>
+      <p>• Sommeil et protéines (~1,6-2g/kg/jour) comptent autant que les séances.</p>
+    </div>`;
+  }
+
+  /* ---------------- RENDER: SETTINGS ---------------- */
+  function renderSettings(){
+    return `<div class="card">
+      <div class="settings-row">
+        <div>
+          <div class="label">Semaine du cycle</div>
+          <div class="desc">Utilisée pour signaler les semaines deload (toutes les 6 semaines)</div>
+        </div>
+        <div class="weekbadge">Semaine ${cycleWeek()}</div>
+      </div>
+      <div class="settings-row">
+        <div>
+          <div class="label">Recommencer le cycle</div>
+          <div class="desc">Remet le compteur de semaines à 1 à partir d'aujourd'hui</div>
+        </div>
+        <button class="smallbtn" id="resetCycle">Recommencer</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="settings-row">
+        <div>
+          <div class="label">Exporter la sauvegarde</div>
+          <div class="desc">Copie tes données (localStorage) pour les garder ou les transférer</div>
+        </div>
+        <button class="smallbtn" id="exportBtn">Exporter</button>
+      </div>
+      <textarea class="backup hidden" id="backupArea" readonly></textarea>
+      <div class="settings-row">
+        <div>
+          <div class="label">Importer une sauvegarde</div>
+          <div class="desc">Colle un export JSON précédent</div>
+        </div>
+        <button class="smallbtn" id="importBtn">Importer</button>
+      </div>
+      <textarea class="backup hidden" id="importArea" placeholder="Colle le JSON ici puis Importer"></textarea>
+      <div class="settings-row">
+        <div>
+          <div class="label">Réinitialiser toutes les données</div>
+          <div class="desc">Supprime définitivement l'historique de charges</div>
+        </div>
+        <button class="smallbtn" id="resetAllBtn" style="color:var(--danger);border-color:var(--danger);">Réinitialiser</button>
+      </div>
+    </div>
+    <div class="progtxt">Les données sont stockées uniquement dans ce navigateur (localStorage). Utilise l'export pour les sauvegarder ailleurs ou les transférer sur un autre appareil.</div>`;
+  }
+
+  /* ---------------- MAIN RENDER ---------------- */
+  function render(){
+    renderDeloadBanner();
+    const view = document.getElementById("view");
+    const sub = document.getElementById("headerSub");
+    if(currentTab==="home"){
+      sub.textContent = "Cette semaine";
+      view.innerHTML = renderHome();
+      view.querySelectorAll("[data-go]").forEach(b=>{
+        b.addEventListener("click", ()=>goSession(b.dataset.go, b.dataset.date));
+      });
+    } else if(currentTab==="journal"){
+      sub.textContent = "Ton carnet de séances";
+      view.innerHTML = renderJournal();
+      view.querySelectorAll("[data-go]").forEach(b=>{
+        b.addEventListener("click", ()=>goSession(b.dataset.go, b.dataset.date));
+      });
+    } else if(currentTab==="session"){
+      sub.textContent = SESSIONS[currentSession.key].label + " · " + fmtDate(currentSession.date);
+      view.innerHTML = renderSession(currentSession.key, currentSession.date);
+      wireSessionEvents();
+    } else if(currentTab==="info"){
+      sub.textContent = "Le programme complet";
+      view.innerHTML = renderInfo();
+    } else if(currentTab==="settings"){
+      sub.textContent = "Réglages & sauvegarde";
+      view.innerHTML = renderSettings();
+      wireSettingsEvents();
+    }
+  }
+
+  function wireSessionEvents(){
+    const view = document.getElementById("view");
+
+    document.getElementById("sessionDate").addEventListener("change", (e)=>{
+      currentSession.date = e.target.value;
+      render();
+    });
+
+    view.querySelectorAll(".timerlaunch").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const sec = BLOCK_REST_SECONDS[btn.dataset.block] || 90;
+        setTimerDuration(sec);
+        startTimer();
+        document.getElementById("timerPanel").classList.remove("hidden");
+      });
+    });
+
+    view.querySelectorAll(".exercise").forEach(exEl=>{
+      const exIndex = parseInt(exEl.dataset.exindex,10);
+      const persist = ()=> persistExercise(exEl, currentSession.key, currentSession.date, exIndex);
+
+      exEl.addEventListener("input", (e)=>{
+        if(e.target.matches("[data-field]")) persist();
+      });
+
+      exEl.querySelector("[data-addset]").addEventListener("click", ()=>{
+        const rows = exEl.querySelector("[data-sets]");
+        const si = rows.children.length;
+        const row = document.createElement("div");
+        row.className = "setrow";
+        row.innerHTML = `<div class="setno">${si+1}</div>
+          <input type="number" inputmode="decimal" step="0.5" placeholder="kg" data-field="w" data-set="${si}">
+          <input type="number" inputmode="numeric" step="1" placeholder="reps" data-field="r" data-set="${si}">
+          <button class="rmset" data-rmset="${si}" title="Retirer la série">✕</button>`;
+        rows.appendChild(row);
+        row.querySelector(".rmset").addEventListener("click", ()=>{ row.remove(); persist(); });
+        persist();
+      });
+
+      exEl.querySelectorAll(".rmset").forEach(btn=>{
+        btn.addEventListener("click", ()=>{ btn.closest(".setrow").remove(); persist(); });
+      });
+
+      const copyBtn = exEl.querySelector("[data-copylast]");
+      if(copyBtn){
+        copyBtn.addEventListener("click", ()=>{
+          const last = lastLogFor(currentSession.key, exIndex, currentSession.date);
+          if(!last) return;
+          const rows = exEl.querySelectorAll(".setrow");
+          last.sets.forEach((set, si)=>{
+            const row = rows[si];
+            if(row){
+              row.querySelector('[data-field="w"]').value = set.w || "";
+              row.querySelector('[data-field="r"]').value = set.r || "";
+            }
+          });
+          persist();
+          toast("Charges reprises");
+        });
+      }
+
+      const histBtn = exEl.querySelector("[data-togglehist]");
+      const histBox = exEl.querySelector("[data-hist]");
+      histBtn.addEventListener("click", ()=>{
+        const open = histBox.classList.toggle("open");
+        if(open){
+          histBox.innerHTML = renderHistoryTable(currentSession.key, exIndex);
+          histBox.querySelectorAll("[data-deldate]").forEach(del=>{
+            del.addEventListener("click", ()=>{
+              const d = del.dataset.deldate;
+              if(state.logs[d] && state.logs[d][currentSession.key]){
+                delete state.logs[d][currentSession.key][exIndex];
+                saveState();
+                histBox.innerHTML = renderHistoryTable(currentSession.key, exIndex);
+                toast("Entrée supprimée");
+              }
+            });
+          });
+        }
+      });
+    });
+
+    document.getElementById("saveSessionBtn").addEventListener("click", ()=>{
+      const date = currentSession.date;
+      const key = currentSession.key;
+      if(!state.logs[date]) state.logs[date] = {};
+      if(!state.logs[date][key]) state.logs[date][key] = {};
+
+      let any = false;
+      view.querySelectorAll(".exercise").forEach(exEl=>{
+        const exIndex = parseInt(exEl.dataset.exindex,10);
+        const sets = [];
+        exEl.querySelectorAll(".setrow").forEach(row=>{
+          const w = row.querySelector('[data-field="w"]').value;
+          const r = row.querySelector('[data-field="r"]').value;
+          if(w!=="" || r!==""){ any = true; }
+          sets.push({w: w||"", r: r||""});
+        });
+        state.logs[date][key][exIndex] = sets;
+      });
+      saveState();
+      toast(any ? "Séance enregistrée ✓" : "Séance enregistrée (vide)");
+    });
+  }
+
+  function wireSettingsEvents(){
+    document.getElementById("resetCycle").addEventListener("click", ()=>{
+      state.cycleStart = todayISO();
+      saveState();
+      toast("Cycle redémarré");
+      render();
+    });
+
+    document.getElementById("exportBtn").addEventListener("click", ()=>{
+      const area = document.getElementById("backupArea");
+      area.classList.remove("hidden");
+      area.value = JSON.stringify(state, null, 2);
+      area.select();
+    });
+
+    document.getElementById("importBtn").addEventListener("click", ()=>{
+      const area = document.getElementById("importArea");
+      if(area.classList.contains("hidden")){
+        area.classList.remove("hidden");
+        return;
+      }
+      try{
+        const parsed = JSON.parse(area.value);
+        if(parsed && typeof parsed==="object"){
+          state = Object.assign({logs:{}, cycleStart: todayISO(), theme:"auto"}, parsed);
+          saveState();
+          applyTheme();
+          toast("Import réussi");
+          render();
+        }
+      }catch(e){
+        toast("JSON invalide");
+      }
+    });
+
+    document.getElementById("resetAllBtn").addEventListener("click", ()=>{
+      if(confirm("Supprimer définitivement toutes les données enregistrées ?")){
+        state = {logs:{}, cycleStart: todayISO(), theme: state.theme||"auto"};
+        saveState();
+        toast("Données réinitialisées");
+        render();
+      }
+    });
+  }
+
+  loadTimer();
+  wireTimerWidget();
+  renderTimer();
+  render();
+})();
+</script>
+</body>
+</html>
